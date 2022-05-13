@@ -1,6 +1,6 @@
 # Label approved pull requests
 
-This GitHub Action applies a label of your choice to pull requests that reach a specified number of approvals. For teams using [Pull Reminders](https://pullreminders.com), this action can be used to exclude approved pull requests from reminders.
+This GitHub Action applies a label of your choice to pull requests that reach a specified number of approvals.
 
 ## Usage
 
@@ -15,17 +15,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Label when approved
-      uses: pullreminders/label-when-approved-action@master
+      uses: croesusfin/label-when-approved-action@master
       env:
         APPROVALS: "2"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ADD_LABEL: "approved"
-        REMOVE_LABEL: "awaiting%20review"
+        REMOVE_LABEL: "awaiting-review"
 ```
 
 ## Demo
 
-<img src="https://github.com/pullreminders/label-when-approved-action/raw/master/docs/images/example.png" width="540">
+<img src="https://github.com/croesusfin/label-when-approved-action/raw/master/docs/images/example.png" width="540">
 
 
 ## License
