@@ -41,15 +41,16 @@ label_when_approved() {
   reviews=$(echo "$body" | jq --raw-output '.[] | {state: .state} | @base64')
 
   approvals=0
-  reviews=0
   
   declare -A reviewsByReviewer
   for r in $reviews; do
     review="$(echo "$r" | base64 -d)"
-    reviewsByReviewer[rState=$(echo "$review" | jq --raw-output '.user.login')]="$review"
+    user=$(echo "$review" | jq --raw-output '.user.login')
+    echo "$user"
+    reviewsByReviewer["$user"]="$review"
   done
   
-  for review in reviewsByReviewer
+  for review in "${reviewsByReviewer[@]}"
     rState=$(echo "$review" | jq --raw-output '.state')
 
     if [[ "$rState" == "APPROVED" ]]; then
