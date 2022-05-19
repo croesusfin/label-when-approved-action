@@ -35,12 +35,64 @@ action=$(jq --raw-output .action "$GITHUB_EVENT_PATH")
 state=$(jq --raw-output .review.state "$GITHUB_EVENT_PATH")
 number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
 
+remove_label() {
+  if [[ -n "$REMOVE_LABEL" ]]; then
+      curl -sSL \
+        -H "${AUTH_HEADER}" \
+        -H "${API_HEADER}" \
+        -X DELETE \
+        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${REMOVE_LABEL}"
+  fi
+}
+
+add_label() {
+  curl -sSL \
+      -H "${AUTH_HEADER}" \
+      -H "${API_HEADER}" \
+      -X POST \
+      -H "Content-Type: application/json" \
+      -d "{\"labels\":[\"${addLabel}\"]}" \
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
+}
+
+remove_addLabel() {
+  curl -sSL \
+    -H "${AUTH_HEADER}" \
+    -H "${API_HEADER}" \
+    -X DELETE \
+    "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${addLabel}"
+}
+
+remove_change() {
+  if [[ -n "$CHANGE_LABEL" ]]; then
+      curl -sSL \
+        -H "${AUTH_HEADER}" \
+        -H "${API_HEADER}" \
+        -X DELETE \
+        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${CHANGE_LABEL}"
+  fi
+}
+
+add_change() {
+  if [[ -n "$CHANGE_LABEL" ]]; then
+    curl -sSL \
+      -H "${AUTH_HEADER}" \
+      -H "${API_HEADER}" \
+      -X POST \
+      -H "Content-Type: application/json" \
+      -d "{\"labels\":[\"${CHANGE_LABEL}\"]}" \
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"  
+  fi
+}
+
 label_when_approved() {
   # https://developer.github.com/v3/pulls/reviews/#list-reviews-on-a-pull-request
   body=$(curl -sSL -H "${AUTH_HEADER}" -H "${API_HEADER}" "${URI}/repos/${GITHUB_REPOSITORY}/pulls/${number}/reviews?per_page=100")
   reviews=$(echo "$body" | jq --raw-output '.[] | {state: .state, user: .user.login} | @base64')
 
   approvals=0
+  changes_requested=0
+  totalReviews=0
   
   declare -A reviewsByReviewer
   for r in $reviews; do
@@ -52,38 +104,37 @@ label_when_approved() {
   for review in ${reviewsByReviewer[@]}; do
     rState=$(echo "$review" | jq --raw-output '.state')
     
+    totalReviews=$((totalReviews+1))
     if [[ "$rState" == "CHANGES_REQUESTED" ]]; then
-      exit 0
-    fi
-    
-    if [[ "$rState" == "APPROVED" ]]; then
+      changes_requested=$((changes_requested+1))
+    elif [[ "$rState" == "APPROVED" ]]; then
       approvals=$((approvals+1))
     fi
 
+    echo "${changes_requested} change requested"
     echo "${approvals}/${APPROVALS} approvals"
-
-    if [[ "$approvals" -ge "$APPROVALS" ]]; then
-      echo "Labeling pull request"
-
-      curl -sSL \
-        -H "${AUTH_HEADER}" \
-        -H "${API_HEADER}" \
-        -X POST \
-        -H "Content-Type: application/json" \
-        -d "{\"labels\":[\"${addLabel}\"]}" \
-        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
-
-      if [[ -n "$REMOVE_LABEL" ]]; then
-          curl -sSL \
-            -H "${AUTH_HEADER}" \
-            -H "${API_HEADER}" \
-            -X DELETE \
-            "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${REMOVE_LABEL}"
-      fi
-
-      break
-    fi
+    
   done
+  
+  if [[ "$totalReviews" -ge "$APPROVALS" ]]; then
+    remove_label
+  fi
+  
+  if [[ "$changes_requested" -ge "1" ]]; then
+    remove_addLabel
+    add_change
+    
+    break
+  fi
+  
+  if [[ "$approvals" -ge "$APPROVALS" ]]; then
+    echo "Labeling pull request"
+
+    add_label
+    remove_change
+
+    break
+  fi
 }
 
 label_when_approved
