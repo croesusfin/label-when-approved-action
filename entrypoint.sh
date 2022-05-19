@@ -18,7 +18,7 @@ fi
 
 addLabel=$ADD_LABEL
 if [[ -n "$LABEL_NAME" ]]; then
-  echo "Warning: Plase define the ADD_LABEL variable instead of the deprecated LABEL_NAME."
+  echo "Warning: Please define the ADD_LABEL variable instead of the deprecated LABEL_NAME."
   addLabel=$LABEL_NAME
 fi
 
@@ -41,9 +41,15 @@ label_when_approved() {
   reviews=$(echo "$body" | jq --raw-output '.[] | {state: .state} | @base64')
 
   approvals=0
-
+  reviews=0
+  
+  declare -A reviewsByReviewer
   for r in $reviews; do
     review="$(echo "$r" | base64 -d)"
+    reviewsByReviewer[rState=$(echo "$review" | jq --raw-output '.user.login')]="$review"
+  done
+  
+  for review in reviewsByReviewer
     rState=$(echo "$review" | jq --raw-output '.state')
 
     if [[ "$rState" == "APPROVED" ]]; then
@@ -76,8 +82,4 @@ label_when_approved() {
   done
 }
 
-if [[ "$state" == "approved" ]]; then
-  label_when_approved
-else
-  echo "Ignoring event ${action}/${state}"
-fi
+label_when_approved
