@@ -6,8 +6,8 @@ LABEL "com.github.actions.icon"="tag"
 LABEL "com.github.actions.color"="gray-dark"
 
 LABEL version="1.0.0"
-LABEL repository="http://github.com/croesusfin/label-when-approved-action"
-LABEL homepage="http://github.com/croesusfin/label-when-approved-action"
+LABEL repository="http://github.com/maxime-gagnon-croesus/label-when-approved-action"
+LABEL homepage="http://github.com/maxime-gagnon-croesus/label-when-approved-action"
 
 RUN apk add --no-cache bash curl jq
 
