@@ -46,13 +46,16 @@ label_when_approved() {
   for r in $reviews; do
     review="$(echo "$r" | base64 -d)"
     user=$(echo "$review" | jq --raw-output '.user')
-    echo "$user"
     reviewsByReviewer["$user"]="$review"
   done
   
   for review in ${reviewsByReviewer[@]}; do
     rState=$(echo "$review" | jq --raw-output '.state')
-    echo "$rState"
+    
+    if [[ "$rState" == "CHANGES_REQUESTED" ]]; then
+      exit 0
+    fi
+    
     if [[ "$rState" == "APPROVED" ]]; then
       approvals=$((approvals+1))
     fi
