@@ -50,7 +50,7 @@ label_when_approved() {
     reviewsByReviewer["$user"]="$review"
   done
   
-  for review in "${reviewsByReviewer[@]}"
+  for review in ${reviewsByReviewer[@]}; do
     rState=$(echo "$review" | jq --raw-output '.state')
 
     if [[ "$rState" == "APPROVED" ]]; then
