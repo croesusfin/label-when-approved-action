@@ -46,7 +46,7 @@ label_when_approved() {
   for r in $reviews; do
     review="$(echo "$r" | base64 -d)"
     user=$(echo "$review" | jq --raw-output '.user')
-    echo "$review"
+    echo "$user"
     reviewsByReviewer["$user"]="$review"
   done
   
