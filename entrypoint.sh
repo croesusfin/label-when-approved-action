@@ -42,9 +42,14 @@ label_when_approved() {
 
   approvals=0
   reviews=0
-
+  
+  declare -A reviewsByReviewer
   for r in $reviews; do
     review="$(echo "$r" | base64 -d)"
+    reviewsByReviewer[rState=$(echo "$review" | jq --raw-output '.user.login')]="$review"
+  done
+  
+  for review in reviewsByReviewer
     rState=$(echo "$review" | jq --raw-output '.state')
 
     if [[ "$rState" == "APPROVED" ]]; then
@@ -77,8 +82,4 @@ label_when_approved() {
   done
 }
 
-if [[ "$action" == "submitted" ]] && [[ "$state" == "approved" ]]; then
-  label_when_approved
-else
-  echo "Ignoring event ${action}/${state}"
-fi
+label_when_approved
