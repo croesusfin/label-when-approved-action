@@ -21,12 +21,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         ADD_LABEL: "approved"
         REMOVE_LABEL: "awaiting-review"
+        CHANGE_LABEL: "changes-requested"
 ```
-
-## Demo
-
-<img src="https://github.com/croesusfin/label-when-approved-action/raw/master/docs/images/example.png" width="540">
-
 
 ## License
 
