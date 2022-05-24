@@ -110,7 +110,9 @@ label_when_approved() {
     elif [[ "$rState" == "APPROVED" ]]; then
       approvals=$((approvals+1))
     fi
-
+    
+    user=$(echo "$review" | jq --raw-output '.user')
+    echo "${user}: ${rState}"
     echo "${changes_requested} change requested"
     echo "${approvals}/${APPROVALS} approvals"
     
@@ -124,16 +126,14 @@ label_when_approved() {
     remove_addLabel
     add_change
     
-    break
+    exit 0
   fi
   
   if [[ "$approvals" -ge "$APPROVALS" ]]; then
-    echo "Labeling pull request"
-
     add_label
     remove_change
 
-    break
+    exit 0
   fi
 }
 
