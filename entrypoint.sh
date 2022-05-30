@@ -103,7 +103,6 @@ label_when_approved() {
   for review in ${reviewsByReviewer[@]}; do
     rState=$(echo "$review" | jq --raw-output '.state')
     
-    totalReviews=$((totalReviews+1))
     if [[ "$rState" == "CHANGES_REQUESTED" ]]; then
       changes_requested=$((changes_requested+1))
     elif [[ "$rState" == "APPROVED" ]]; then
