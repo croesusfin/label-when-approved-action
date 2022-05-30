@@ -92,7 +92,6 @@ label_when_approved() {
 
   approvals=0
   changes_requested=0
-  totalReviews=0
   
   declare -A reviewsByReviewer
   for r in $reviews; do
@@ -118,6 +117,7 @@ label_when_approved() {
     
   done
   
+  totalReviews=$((approvals+changes_requested))
   if [[ "$totalReviews" -ge "$APPROVALS" ]]; then
     remove_label
   fi
