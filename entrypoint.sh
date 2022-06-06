@@ -126,11 +126,12 @@ label_when_approved() {
     add_change
     
     exit 0
+  else
+    remove_change
   fi
   
   if [[ "$approvals" -ge "$APPROVALS" ]]; then
     add_label
-    remove_change
 
     exit 0
   fi
