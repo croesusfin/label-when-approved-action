@@ -96,8 +96,11 @@ label_when_approved() {
   declare -A reviewsByReviewer
   for r in $reviews; do
     review="$(echo "$r" | base64 -d)"
-    user=$(echo "$review" | jq --raw-output '.user')
-    reviewsByReviewer["$user"]="$review"
+    rState=$(echo "$review" | jq --raw-output '.state')
+    if [[ "$rState" == "CHANGES_REQUESTED" || "$rState" == "APPROVED" ]]; then
+      user=$(echo "$review" | jq --raw-output '.user')
+      reviewsByReviewer["$user"]="$review"
+    fi
   done
   
   for review in ${reviewsByReviewer[@]}; do
