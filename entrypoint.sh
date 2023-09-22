@@ -41,7 +41,19 @@ remove_label() {
         -H "${AUTH_HEADER}" \
         -H "${API_HEADER}" \
         -X DELETE \
-        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${REMOVE_LABEL}" || true
+        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${REMOVE_LABEL}"
+  fi
+}
+
+add_removeLabel() {
+  if [[ -n "$REMOVE_LABEL" ]]; then
+    curl -sSL \
+      -H "${AUTH_HEADER}" \
+      -H "${API_HEADER}" \
+      -X POST \
+      -H "Content-Type: application/json" \
+      -d "{\"labels\":[\"${REMOVE_LABEL}\"]}" \
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
   fi
 }
 
@@ -52,7 +64,7 @@ add_label() {
       -X POST \
       -H "Content-Type: application/json" \
       -d "{\"labels\":[\"${addLabel}\"]}" \
-      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels" || true
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
 }
 
 remove_addLabel() {
@@ -60,7 +72,7 @@ remove_addLabel() {
     -H "${AUTH_HEADER}" \
     -H "${API_HEADER}" \
     -X DELETE \
-    "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${addLabel}" || true
+    "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${addLabel}"
 }
 
 remove_change() {
@@ -69,7 +81,7 @@ remove_change() {
         -H "${AUTH_HEADER}" \
         -H "${API_HEADER}" \
         -X DELETE \
-        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${CHANGE_LABEL}" || true
+        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${CHANGE_LABEL}"
   fi
 }
 
@@ -81,7 +93,7 @@ add_change() {
       -X POST \
       -H "Content-Type: application/json" \
       -d "{\"labels\":[\"${CHANGE_LABEL}\"]}" \
-      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels" || true
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
   fi
 }
 
@@ -122,6 +134,10 @@ label_when_approved() {
   totalReviews=$((approvals+changes_requested))
   if [[ "$totalReviews" -ge "$APPROVALS" ]]; then
     remove_label
+  else
+    add_removeLabel
+  else
+    
   fi
   
   if [[ "$changes_requested" -ge "1" ]]; then
@@ -130,7 +146,7 @@ label_when_approved() {
     
     exit 0
   else
-    remove_change || true
+    remove_change
   fi
   
   if [[ "$approvals" -ge "$APPROVALS" ]]; then
