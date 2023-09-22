@@ -130,7 +130,7 @@ label_when_approved() {
     
     exit 0
   else
-    remove_change
+    remove_change || true
   fi
   
   if [[ "$approvals" -ge "$APPROVALS" ]]; then
