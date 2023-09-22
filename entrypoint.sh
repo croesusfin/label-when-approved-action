@@ -45,6 +45,18 @@ remove_label() {
   fi
 }
 
+add_removeLabel() {
+  if [[ -n "$REMOVE_LABEL" ]]; then
+    curl -sSL \
+      -H "${AUTH_HEADER}" \
+      -H "${API_HEADER}" \
+      -X POST \
+      -H "Content-Type: application/json" \
+      -d "{\"labels\":[\"${REMOVE_LABEL}\"]}" \
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
+  fi
+}
+
 add_label() {
   curl -sSL \
       -H "${AUTH_HEADER}" \
@@ -122,6 +134,8 @@ label_when_approved() {
   totalReviews=$((approvals+changes_requested))
   if [[ "$totalReviews" -ge "$APPROVALS" ]]; then
     remove_label
+  else
+    add_removeLabel
   fi
   
   if [[ "$changes_requested" -ge "1" ]]; then
