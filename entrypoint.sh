@@ -136,8 +136,6 @@ label_when_approved() {
     remove_label
   else
     add_removeLabel
-  else
-    
   fi
   
   if [[ "$changes_requested" -ge "1" ]]; then
