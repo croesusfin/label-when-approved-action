@@ -41,7 +41,7 @@ remove_label() {
         -H "${AUTH_HEADER}" \
         -H "${API_HEADER}" \
         -X DELETE \
-        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${REMOVE_LABEL}" || true
+        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${REMOVE_LABEL}"
   fi
 }
 
@@ -64,7 +64,7 @@ add_label() {
       -X POST \
       -H "Content-Type: application/json" \
       -d "{\"labels\":[\"${addLabel}\"]}" \
-      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels" || true
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
 }
 
 remove_addLabel() {
@@ -72,7 +72,7 @@ remove_addLabel() {
     -H "${AUTH_HEADER}" \
     -H "${API_HEADER}" \
     -X DELETE \
-    "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${addLabel}" || true
+    "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${addLabel}"
 }
 
 remove_change() {
@@ -81,7 +81,7 @@ remove_change() {
         -H "${AUTH_HEADER}" \
         -H "${API_HEADER}" \
         -X DELETE \
-        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${CHANGE_LABEL}" || true
+        "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels/${CHANGE_LABEL}"
   fi
 }
 
@@ -93,7 +93,7 @@ add_change() {
       -X POST \
       -H "Content-Type: application/json" \
       -d "{\"labels\":[\"${CHANGE_LABEL}\"]}" \
-      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels" || true
+      "${URI}/repos/${GITHUB_REPOSITORY}/issues/${number}/labels"
   fi
 }
 
