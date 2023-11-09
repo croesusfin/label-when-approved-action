@@ -109,7 +109,7 @@ label_when_approved() {
   for r in $reviews; do
     review="$(echo "$r" | base64 -d)"
     rState=$(echo "$review" | jq --raw-output '.state')
-    if [[ "$rState" == "CHANGES_REQUESTED" || "$rState" == "APPROVED" ]]; then
+    if [[ "$rState" == "CHANGES_REQUESTED" || "$rState" == "APPROVED" || "$rState" == "DISMISSED" ]]; then
       user=$(echo "$review" | jq --raw-output '.user')
       reviewsByReviewer["$user"]="$review"
     fi
