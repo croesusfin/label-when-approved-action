@@ -151,6 +151,8 @@ label_when_approved() {
     add_label
 
     exit 0
+  else
+    remove_addLabel
   fi
 }
 
